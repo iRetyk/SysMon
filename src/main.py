@@ -6,27 +6,19 @@ import argparse
 
 
 
-DEFAULT_PATH = "log/log.json"
 
-def digest_input(from_user: str):
-    """
-    Args: from_user (str) - the input user gave
-    
-    Returns: 
-    """
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--interval","-i",
-                        type=int
+                        type=float
                         ,default = 2.0,
-                        help="Specify the interval for the refresh rate in the display, in seconds. [Default - 2]"
+                        help="Specify the interval for the refresh rate in the display, in seconds. [Default - 2, values below 0.2 will be automatically rounded to 0.2]"
                         )
 
     parser.add_argument("--log","-l",
                         type=str,
-                        default = DEFAULT_PATH,
-                        help = f"Specify the path for the logs. [Default - ~/log/log.json]"
+                        help = f"Specify the path for the logs. [Optional]"
                         )
     
     return parser.parse_args()
@@ -34,6 +26,10 @@ def parse_args():
 def main():
     # Project entry point
     args = parse_args()
+    interval = max(args.interval, 0.2) # values under 0.2, are rounded to 0.2.
+    log_path = args.log
+    
+    log = log_path is not None
 
 
 
