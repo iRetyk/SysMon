@@ -8,4 +8,4 @@ def test_cpu(mocker):
     per_core,total = get_cpu_usage(2)
     
     assert per_core == [10.0,20.0,30.0,40.0]
-    assert total == 4
+    assert total == 25.0
