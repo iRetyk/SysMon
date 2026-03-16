@@ -55,7 +55,7 @@ def convert_to_GB(num: float) -> str:
 
 if __name__ == "__main__":
     print("Warning, you are trying to run collector.py, that shouldn't be run directly. Are you sure you want to continue this action? (Y/N) (Useful only for dev testing)")
-    if input() == "Y":
+    if "Y" in input():
         print(get_cpu_usage(2))
         print(get_memory())
         print(get_disk())
