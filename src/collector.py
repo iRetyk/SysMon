@@ -12,6 +12,10 @@ def get_cpu_usage(interval: float) -> tuple[list[float],float]:
     Output: Usage per-core, total (tuple[list[float],float])
     """
     cpu_percent_list = psutil.cpu_percent(interval,percpu=True)
+    
+    if not cpu_percent_list: 
+        raise RuntimeError("Cores list is empty - psutil has failed for some reason")
+    
     total_cpu_percent = round(sum(cpu_percent_list) / len(cpu_percent_list), 1) # Average percent rounded to one decimal point
     return cpu_percent_list,total_cpu_percent
 
