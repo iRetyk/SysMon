@@ -2,4 +2,4 @@
 name = "SysMon"
 version = "0.1.0"
 author = "Idan Retyk"
-dependencies = ["psutil"]
+dependencies = ["psutil","argparse"]
