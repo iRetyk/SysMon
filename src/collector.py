@@ -28,22 +28,36 @@ def get_memory() -> dict[str,int | float]:
     percent = mem_stats.percent # total - available / total * 100
     used = mem_stats.used # Memory currently in use
     free = mem_stats.free
-    return {"used":used, "total":total, "percent":percent}
+    return {"used": used, "total": total, "percent": percent}
     
 
-def get_disk():
+def get_disk() -> list[dict]:
     """
-    Input:
+    Input: no input
     
-    Output: Disk usage (int)
+    Output: List of every partition info (mountpoint, device, total, used, percent) (list[dict])
     """
-    pass
+    disk_list: list[dict] = []
+    
+    for disk_par in psutil.disk_partitions():
+        usage = psutil.disk_usage(disk_par.mountpoint)
+
+        
+        disk_list.append({"mountpoint": disk_par.mountpoint, "device": disk_par.device ,"total": convert_to_GB(usage.total),
+                            "used": convert_to_GB(usage.used), "percent": usage.percent})
+        
+    return disk_list
+
+
+def convert_to_GB(num: float) -> str:
+    return f"{num / 1024**3:.2f}GB"
+
 
 if __name__ == "__main__":
     print("Warning, you are trying to run collector.py, that shouldn't be run directly. Are you sure you want to continue this action? (Y/N) (Useful only for dev testing)")
     if input() == "Y":
-        # print(get_cpu_usage(2))
+        print(get_cpu_usage(2))
         print(get_memory())
-        # print(get_disk())
+        print(get_disk())
     else:
         print("exiting...")
