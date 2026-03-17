@@ -28,8 +28,8 @@ def main():
     args = parse_args()
     interval = max(args.interval, 0.2) # values under 0.2, are rounded to 0.2.
     log_path = args.log
-    
     log = log_path is not None
+    
     try:
         app = App(interval)
         app.run()

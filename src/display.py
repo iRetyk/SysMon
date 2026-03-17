@@ -8,7 +8,12 @@ from rich.live import Live
 from rich.table import Table
 from rich.align import Align
 from rich.panel import Panel
+from rich.progress import Progress
+from rich.console import Console
+
 import time
+import threading
+
 
 CPU_COLOR_TITLE = "red1"
 DISK_COLOR_TITLE  = "orange1"
@@ -19,18 +24,33 @@ DISK_COLOR  = "orange3"
 MEM_COLOR = "yellow3"
 
 class App:
-    def __init__(self,interval: int) -> None:
+    def __init__(self,interval: float) -> None:
         self.__interval = interval
+        self.__table: Table = Table()
 
     
     def run(self):
+        
+        
+        # Build first table in the same time of a progress bar 
+        t1 = threading.Thread(target=self.build_table)
+        t1.start()
+        # Loading Progress Bar
+        
+        with Progress() as p:
+            task = p.add_task("Loading...",total=50)
+            for i in range(50):
+                time.sleep(self.__interval / 50.0)
+                p.update(task, advance=1)
+
+        t1.join()
         with Live(refresh_per_second=1) as live:
             while True:
-                live.update(self.build_table())
-                # No need to sleep because the cpu_count function takes interval many seconds.
-
+                live.update(self.__table)
+                self.build_table() # No need to sleep because the cpu_count function takes interval many seconds.
     
-    def build_table(self) -> Table:
+    
+    def build_table(self,return_value = True):
         table = Table(title="System Metrics")
         table.add_column(Align(f"[{CPU_COLOR_TITLE}]CPU","center"))
         table.add_column(Align(f"[{DISK_COLOR_TITLE}]Disk","center"))
@@ -44,7 +64,7 @@ class App:
         # table.add_row("Memory",self.build_memory_table())
         # table.add_row("Disk",self.build_disk_table())
 
-        return table
+        self.__table = table
     
     def build_cpu_table(self) -> Table:
         table = Table()
