@@ -1,7 +1,8 @@
 
-### Automatic Python .gitignore template ###
+###Python .gitignore template suggested by github ###
 
 .vscode
+log/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
