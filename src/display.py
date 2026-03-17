@@ -6,7 +6,17 @@ from collector import get_cpu_usage,get_memory,get_disk
 
 from rich.live import Live
 from rich.table import Table
+from rich.align import Align
+from rich.panel import Panel
 import time
+
+CPU_COLOR_TITLE = "red1"
+DISK_COLOR_TITLE  = "orange1"
+MEM_COLOR_TITLE = "yellow1"
+
+CPU_COLOR = "red3"
+DISK_COLOR  = "orange3"
+MEM_COLOR = "yellow3"
 
 class App:
     def __init__(self,interval: int) -> None:
@@ -22,10 +32,12 @@ class App:
     
     def build_table(self) -> Table:
         table = Table(title="System Metrics")
-        table.add_column("CPU")
-        table.add_column("Disk")
-        table.add_column("Memory")
-        table.add_row(self.build_cpu_table(),self.build_disk_table(),self.build_memory_table())
+        table.add_column(Align(f"[{CPU_COLOR_TITLE}]CPU","center"))
+        table.add_column(Align(f"[{DISK_COLOR_TITLE}]Disk","center"))
+        table.add_column(Align(f"[{MEM_COLOR_TITLE}]Memory","center"))
+        table.add_row(Panel(self.build_cpu_table(),style=CPU_COLOR),
+                        Panel(self.build_disk_table(),style=DISK_COLOR),
+                        Panel(self.build_memory_table(),style=MEM_COLOR))
         
         ### Alternative design ###
         # table.add_row("CPU",self.build_cpu_table())

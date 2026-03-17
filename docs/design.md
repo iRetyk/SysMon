@@ -14,5 +14,6 @@ after researching specify about mac (which am i using) it is very common that ap
 
 
 sources:
-https://stackoverflow.com/questions/48246674/group-multiple-pytest-cases-for-the-same-function - multiple tests with one function
+https://stackoverflow.com/questions/48246674/group-multiple-pytest-cases-for-the-same-function - multiple tests with one function pytest
+https://stackoverflow.com/questions/73098801/rich-center-a-renderable-in-layout - center object in rich using Align
 https://docs.python.org/3/howto/argparse.html - argparse doc
