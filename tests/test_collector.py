@@ -1,5 +1,6 @@
-from src import get_cpu_usage
+from src import get_cpu_usage,get_memory,get_disk,convert_to_GB
 import pytest
+from collections import namedtuple
 
 @pytest.mark.parametrize("mock_per_core,mock_total", [
     ([0.0, 0.0, 0.0, 0.0], 0.0),
@@ -25,4 +26,49 @@ def test_cpu_empty_list(mocker):
     
     with pytest.raises(RuntimeError):
         get_cpu_usage(2)
+
+
+
+
+svmem = namedtuple("svmem",["total","available","free","used","percent"])
+
+@pytest.mark.parametrize("total,available,free,used,percent", [
+                        (20,10,15,7,6.5),
+                        (0,0,0,0,0),
+])
+def test_mem(mocker,total,available,free,used,percent):
+    mock_memory_object = svmem(total=total,available=available,free=free,used=used,percent=percent)
     
+    mocker.patch("src.collector.psutil.virtual_memory",return_value=mock_memory_object)
+    
+    mem_stats = get_memory()
+    
+    assert mem_stats["total"] == total
+    assert mem_stats["used"] == used
+    assert mem_stats["percent"] == percent
+
+
+
+
+Partition = namedtuple("Partition", ["mountpoint", "device"])
+Usage = namedtuple("Usage", ["total", "used", "percent"])
+
+@pytest.mark.parametrize("mountpoint,device,total,used,percent", [
+    ("/", "/dev/sda1", 500_000_000_000, 300_000_000_000, 60.0),
+    ("/data", "/dev/sdb1", 1_000_000_000_000, 400_000_000_000, 40.0),
+])
+def test_disk(mocker, mountpoint, device, total, used, percent):
+    mocker.patch("psutil.disk_partitions", return_value=[Partition(mountpoint=mountpoint, device=device)])
+    mocker.patch("psutil.disk_usage", return_value=Usage(total=total, used=used, percent=percent))
+
+    # Call the function
+    mem_stats_list = get_disk()
+
+    # Since get_disk returns a list of dicts, take the first element
+    mem_stats = mem_stats_list[0]
+
+    assert mem_stats["mountpoint"] == mountpoint
+    assert mem_stats["device"] == device
+    assert mem_stats["total"] == convert_to_GB(total)
+    assert mem_stats["used"] == convert_to_GB(used)
+    assert mem_stats["percent"] == percent
