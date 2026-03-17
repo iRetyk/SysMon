@@ -4,10 +4,11 @@ Collect the metrics displayed to user
 
 import psutil
 
-def get_cpu_usage(interval: float) -> tuple[list[float],float]:
+def get_cpu_usage(interval: float,force: bool = True) -> tuple[list[float],float]:
     """
     NOTE: this function sleeps for interval many seconds
     Input: interval (float)
+            force (bool) - force the program to calculate it now. If set to false - may
     
     Output: Usage per-core, total (tuple[list[float],float])
     """

@@ -2,6 +2,10 @@
 
 I've noticed that loading the table for the first takes a few (interval) seconds, becuase it sleeps before loading, so I've added a progress bar to load at the same time with threads 
 
+Problem - when writing the logger, i noticed that if i called the cpu_usage, it will halt. and the display will take twice as longer to update, because it calls cpu_usage twice (once from the logger and once from the display). 
+Chosen Solution - 
+* Change the architecture so that the main loop is in main, and the main file requests the data from the main file, and pass it as parameter to collector and logger. 
+
 
 insights:
 

@@ -2,7 +2,7 @@
 Rendering logic (rich)
 """
 
-from collector import get_cpu_usage,get_memory,get_disk
+
 
 from rich.live import Live
 from rich.table import Table
@@ -22,41 +22,44 @@ CPU_COLOR = "red3"
 DISK_COLOR  = "orange3"
 MEM_COLOR = "yellow3"
 
-class App:
+class Display:
     def __init__(self,interval: float) -> None:
         self.__interval = interval
         self.__table: Table = Table()
 
+
+    def ready(self):
+        self.__live = Live(refresh_per_second=1)
+        self.__live.start()
     
-    def run(self):
+    
+    def shutdown(self):
+        self.__live.stop()
+    
+    def update(self, data: dict):
+        self.build_table(data)
+        self.__live.update(self.__table)
         
-        
-        # Build first table in the same time of a progress bar 
-        t1 = threading.Thread(target=self.build_table)
-        t1.start()
-        # Loading Progress Bar
-        
+
+    def load_progress(self):
         with Progress() as p:
             task = p.add_task("Loading...",total=50)
-            for i in range(50):
+            for _ in range(50):
                 time.sleep(self.__interval / 50.0)
                 p.update(task, advance=1)
 
-        t1.join()
-        with Live(refresh_per_second=1) as live:
-            while True:
-                live.update(self.__table)
-                self.build_table() # No need to sleep because the cpu_count function takes interval many seconds.
+
+
     
     
-    def build_table(self,return_value = True):
+    def build_table(self, data: dict):
         table = Table(title="System Metrics")
         table.add_column(Align(f"[{CPU_COLOR_TITLE}]CPU","center"))
         table.add_column(Align(f"[{DISK_COLOR_TITLE}]Disk","center"))
         table.add_column(Align(f"[{MEM_COLOR_TITLE}]Memory","center"))
-        table.add_row(Panel(self.build_cpu_table(),style=CPU_COLOR),
-                        Panel(self.build_disk_table(),style=DISK_COLOR),
-                        Panel(self.build_memory_table(),style=MEM_COLOR))
+        table.add_row(Panel(self.build_cpu_table(data["cpu"]),style=CPU_COLOR),
+                        Panel(self.build_disk_table(data["disk"]),style=DISK_COLOR),
+                        Panel(self.build_memory_table(data["mem"]),style=MEM_COLOR))
         
         ### Alternative design ###
         # table.add_row("CPU",self.build_cpu_table())
@@ -65,23 +68,23 @@ class App:
 
         self.__table = table
     
-    def build_cpu_table(self) -> Table:
+    def build_cpu_table(self,data:tuple[list[float],float]) -> Table:
         table = Table()
         table.add_column("Metric")
         table.add_column("Value")
         
-        cpu_list, total = get_cpu_usage(self.__interval) ## Reminder - this functions sleeps for interval many seconds
+        cpu_list, total = data
         for i, cpu in enumerate(cpu_list):
             table.add_row(f"CPU {i + 1}",str(cpu))
         table.add_row("Total", str(total))
         
         return table
 
-    def build_memory_table(self) -> Table:
+    def build_memory_table(self,data) -> Table:
         table = Table()
         table.add_column("Metric")
         table.add_column("Value")
-        mem_stats = get_memory()
+        mem_stats = data
         
         for key in mem_stats.keys():
             table.add_row(key, str(mem_stats[key]))
@@ -89,9 +92,9 @@ class App:
         return table
 
     
-    def build_disk_table(self) -> Table:
+    def build_disk_table(self,data) -> Table:
         
-        disks = get_disk()
+        disks = data
         
         tables: list[Table] = []
         

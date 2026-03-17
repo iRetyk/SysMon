@@ -3,10 +3,14 @@ Argument Parsing
 """
 
 import argparse
-from display import App
 
+import threading
 
+from logger import Logger
+from display import Display
+from collector import get_cpu_usage,get_memory,get_disk
 
+DATA = {}
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -23,6 +27,13 @@ def parse_args():
     
     return parser.parse_args()
 
+
+def get_data(interval: float) -> dict:
+    # get_cpu_usage sleeps internally so this function sleeps internally
+    global DATA
+    DATA = {"cpu":get_cpu_usage(interval),"mem":get_memory(),"disk":get_disk()}
+    return DATA
+
 def main():
     # Project entry point
     args = parse_args()
@@ -30,15 +41,28 @@ def main():
     log_path = args.log
     log = log_path is not None
     
+
+    app = Display(interval)
+    logger = Logger(interval,log_path)
     try:
-        app = App(interval)
-        app.run()
+        t1 = threading.Thread(target=get_data,args=[interval],daemon=True)
+        t1.start()
+        app.load_progress()
+        t1.join()
+        
+        data = DATA # No need to use lock because t1.join was already called
+        app.ready()
+        while True:
+            app.update(data)
+            data = get_data(interval) # This sleep internally
+
     except KeyboardInterrupt:
         print("Exiting...")
+    finally:
+        app.shutdown()
 
 def debug_main():
-    app = App(2)
-    app.run()
+    app = Display(2)
 
 if __name__ == "__main__":
     debug = False
