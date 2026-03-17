@@ -26,8 +26,8 @@ class App:
     def run(self):
         with Live(refresh_per_second=1) as live:
             while True:
-                # ... populate with data from collector ...
                 live.update(self.build_table())
+                # No need to sleep because the cpu_count function takes interval many seconds.
 
     
     def build_table(self) -> Table:

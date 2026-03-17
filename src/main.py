@@ -3,7 +3,7 @@ Argument Parsing
 """
 
 import argparse
-import display
+from display import App
 
 
 
@@ -30,13 +30,18 @@ def main():
     log_path = args.log
     
     log = log_path is not None
+    try:
+        app = App(interval)
+        app.run()
+    except KeyboardInterrupt:
+        print("Exiting...")
 
 def debug_main():
-    app = display.App(2)
+    app = App(2)
     app.run()
 
 if __name__ == "__main__":
-    debug = True
+    debug = False
     if debug:
         debug_main()
     else:
