@@ -36,7 +36,7 @@ def get_memory() -> dict[str,str | float]:
     return {"used": convert_to_GB(used), "total": convert_to_GB(total), "percent": percent}
     
 
-def get_disk() -> list[dict[str,str | int | float]]:
+def get_disk() -> list[dict[str,str | float]]:
     """
     Input: no input
     

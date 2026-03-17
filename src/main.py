@@ -29,6 +29,26 @@ def parse_args():
 
 
 def get_data(interval: float) -> dict:
+    """
+    Returns a dict with all the data, in this format:
+    
+    {"cpu": <cpu_data>, "mem":<mem_data>, "disk":<disk_data>}
+        cpu_data: (<per_cpu_percent>,<total>)
+            per_cpu_percent: list[float]
+            total: float
+        mem_data: {"used":<used>,"total":<total>,"percent":<percent>}
+            used: str
+            total: str
+            percent: float
+        disk_data: [<disk_dict0>,<disk_dict1>...]
+            disk_dict: {"mountpoint":<mountpoint>, "device":<device>, "used":<used>,"total":<total>,"percent":<percent>}
+                mountpoint: str
+                device : str
+                used: str
+                total: str
+                percent: float
+    """
+    
     # get_cpu_usage sleeps internally so this function sleeps internally
     global DATA
     DATA = {"cpu":get_cpu_usage(interval),"mem":get_memory(),"disk":get_disk()}
@@ -54,6 +74,7 @@ def main():
         app.ready()
         while True:
             app.update(data)
+            #logger.log(data)
             data = get_data(interval) # This sleep internally
 
     except KeyboardInterrupt:

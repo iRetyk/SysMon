@@ -1,5 +1,27 @@
 
 
+Architecture dits:
+
+the var data refers to a dict in this format, that is used to pass cleanly all the required data to other modules
+
+    {"cpu": <cpu_data>, "mem":<mem_data>, "disk":<disk_data>}
+        cpu_data: (<per_cpu_percent>,<total>)
+            per_cpu_percent: list[float]
+            total: float
+        mem_data: {"used":<used>,"total":<total>,"percent":<percent>}
+            used: str
+            total: str
+            percent: float
+        disk_data: [<disk_dict0>,<disk_dict1>...]
+            disk_dict: {"mountpoint":<mountpoint>, "device":<device>, "used":<used>,"total":<total>,"percent":<percent>}
+                mountpoint: str
+                device : str
+                used: str
+                total: str
+                percent: float
+
+
+
 I've noticed that loading the table for the first takes a few (interval) seconds, becuase it sleeps before loading, so I've added a progress bar to load at the same time with threads 
 
 Problem - when writing the logger, i noticed that if i called the cpu_usage, it will halt. and the display will take twice as longer to update, because it calls cpu_usage twice (once from the logger and once from the display). 
