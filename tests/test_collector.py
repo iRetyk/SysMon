@@ -30,14 +30,14 @@ def test_cpu_empty_list(mocker):
 
 
 
-svmem = namedtuple("svmem",["total","available","free","used","percent"])
+mock_svmem = namedtuple("svmem",["total","available","free","used","percent"])
 
 @pytest.mark.parametrize("total,available,free,used,percent", [
                         (20,10,15,7,6.5),
                         (0,0,0,0,0),
 ])
 def test_mem(mocker,total,available,free,used,percent):
-    mock_memory_object = svmem(total=total,available=available,free=free,used=used,percent=percent)
+    mock_memory_object = mock_svmem(total=total,available=available,free=free,used=used,percent=percent)
     
     mocker.patch("src.collector.psutil.virtual_memory",return_value=mock_memory_object)
     
