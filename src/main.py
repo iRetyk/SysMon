@@ -3,7 +3,7 @@ Argument Parsing
 """
 
 import argparse
-
+import display
 
 
 
@@ -31,7 +31,13 @@ def main():
     
     log = log_path is not None
 
-
+def debug_main():
+    app = display.App(2)
+    app.run()
 
 if __name__ == "__main__":
-    main()
+    debug = True
+    if debug:
+        debug_main()
+    else:
+        main()
