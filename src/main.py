@@ -57,9 +57,11 @@ def main():
             data = get_data(interval) # This sleep internally
 
     except KeyboardInterrupt:
-        print("Exiting...")
+        app.shutdown()
+        print("Exiting cleanly...")
     finally:
         app.shutdown()
+
 
 def debug_main():
     app = Display(2)

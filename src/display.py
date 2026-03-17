@@ -34,7 +34,10 @@ class Display:
     
     
     def shutdown(self):
-        self.__live.stop()
+        try:
+            self.__live.stop()
+        except:
+            pass
     
     def update(self, data: dict):
         self.build_table(data)
