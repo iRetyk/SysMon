@@ -21,7 +21,7 @@ def get_cpu_usage(interval: float,force: bool = True) -> tuple[list[float],float
     return cpu_percent_list,total_cpu_percent
 
 
-def get_memory() -> dict[str,int | float]:
+def get_memory() -> dict[str,str | float]:
     """
     Input: no input
     
@@ -33,7 +33,7 @@ def get_memory() -> dict[str,int | float]:
     percent = mem_stats.percent # total - available / total * 100
     used = mem_stats.used # Memory currently in use
     free = mem_stats.free
-    return {"used": used, "total": total, "percent": percent}
+    return {"used": convert_to_GB(used), "total": convert_to_GB(total), "percent": percent}
     
 
 def get_disk() -> list[dict[str,str | int | float]]:
