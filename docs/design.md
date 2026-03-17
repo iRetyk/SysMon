@@ -21,6 +21,8 @@ the var data refers to a dict in this format, that is used to pass cleanly all t
                 percent: float
 
 
+If an error occurred while trying to log (no permission etc), will print error message and continue to display the stats just without the logging.
+
 
 I've noticed that loading the table for the first takes a few (interval) seconds, becuase it sleeps before loading, so I've added a progress bar to load at the same time with threads 
 

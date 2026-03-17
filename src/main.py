@@ -5,6 +5,7 @@ Argument Parsing
 import argparse
 
 import threading
+import traceback
 
 from logger import Logger
 from display import Display
@@ -61,20 +62,29 @@ def main():
     log_path = args.log
     log = log_path is not None
     
-
     app = Display(interval)
-    logger = Logger(interval,log_path)
-    try:
-        t1 = threading.Thread(target=get_data,args=[interval],daemon=True)
-        t1.start()
-        app.load_progress()
-        t1.join()
+    if log:
+        logger = Logger(log_path)
+    t1 = threading.Thread(target=get_data,args=[interval],daemon=True)
+    t1.start()
+    app.load_progress()
+    t1.join()
         
-        data = DATA # No need to use lock because t1.join was already called
-        app.ready()
+    data = DATA # No need to use lock because t1.join was already called
+    app.ready()
+    
+    # Main loop
+    try:
         while True:
+            if log:
+                try:
+                    logger.log(data) #type:ignore
+                except Exception as e:
+                    traceback.print_exc()
+                    print("An error occurred when trying to log. Will continue without logging")
+                    log = False
+            
             app.update(data)
-            #logger.log(data)
             data = get_data(interval) # This sleep internally
 
     except KeyboardInterrupt:
@@ -85,8 +95,11 @@ def main():
 
 
 def debug_main():
-    app = Display(2)
-
+    data = get_data(2)
+    logger = Logger("../log/json_test.json")
+    logger.log(data)
+    
+    
 if __name__ == "__main__":
     debug = False
     if debug:
