@@ -9,7 +9,6 @@ from rich.table import Table
 from rich.align import Align
 from rich.panel import Panel
 from rich.progress import Progress
-from rich.console import Console
 
 import time
 import threading
