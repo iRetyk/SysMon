@@ -48,8 +48,8 @@ def test_mem(mocker,total,available,free,used,percent):
     
     mem_stats = get_memory()
     
-    assert mem_stats["total"] == total
-    assert mem_stats["used"] == used
+    assert mem_stats["total"] == convert_to_GB(total)
+    assert mem_stats["used"] == convert_to_GB(used)
     assert mem_stats["percent"] == percent
 
 
