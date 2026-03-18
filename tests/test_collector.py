@@ -2,6 +2,9 @@ from src import get_cpu_usage,get_memory,get_disk,convert_to_GB
 import pytest
 from collections import namedtuple
 
+########################
+## Test get_cpu_usage ##
+########################
 @pytest.mark.parametrize("mock_per_core,mock_total", [
     ([0.0, 0.0, 0.0, 0.0], 0.0),
         ([10.0, 20.0, 30.0, 40.0], 25.0),
@@ -28,7 +31,9 @@ def test_cpu_empty_list(mocker):
         get_cpu_usage(2)
 
 
-
+#####################
+## Test get_memory ##
+#####################
 
 mock_svmem = namedtuple("svmem",["total","available","free","used","percent"])
 
@@ -48,6 +53,9 @@ def test_mem(mocker,total,available,free,used,percent):
     assert mem_stats["percent"] == percent
 
 
+###################
+## Test get_disk ##
+###################
 
 
 Partition = namedtuple("Partition", ["mountpoint", "device"])
