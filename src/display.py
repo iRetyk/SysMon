@@ -7,20 +7,19 @@ Rendering logic (rich)
 from rich.live import Live
 from rich.table import Table
 from rich.align import Align
-from rich.panel import Panel
 from rich.progress import Progress
 
 import time
 import threading
 
 
-CPU_COLOR_TITLE = "red1"
-DISK_COLOR_TITLE  = "orange1"
-MEM_COLOR_TITLE = "yellow1"
+CPU_COLOR_TITLE = "grey11"
+DISK_COLOR_TITLE  = "grey35"
+MEM_COLOR_TITLE = "grey50"
 
-CPU_COLOR = "red3"
-DISK_COLOR  = "orange3"
-MEM_COLOR = "yellow3"
+GOOD_COLOR = "green"
+OK_COLOR  = "yellow"
+BAD_COLOR = "red"
 
 class Display:
     def __init__(self,interval: float) -> None:
@@ -60,9 +59,9 @@ class Display:
         table.add_column(Align(f"[{CPU_COLOR_TITLE}]CPU","center"))
         table.add_column(Align(f"[{DISK_COLOR_TITLE}]Disk","center"))
         table.add_column(Align(f"[{MEM_COLOR_TITLE}]Memory","center"))
-        table.add_row(Panel(self.build_cpu_table(data["cpu"]),style=CPU_COLOR),
-                        Panel(self.build_disk_table(data["disk"]),style=DISK_COLOR),
-                        Panel(self.build_memory_table(data["mem"]),style=MEM_COLOR))
+        table.add_row(self.build_cpu_table(data["cpu"]),
+                        self.build_disk_table(data["disk"]),
+                        self.build_memory_table(data["mem"]))
         
         ### Alternative design ###
         # table.add_row("CPU",self.build_cpu_table())
@@ -77,25 +76,33 @@ class Display:
         table.add_column("Value")
         
         cpu_list, total = data
-        for i, cpu in enumerate(cpu_list):
-            table.add_row(f"CPU {i + 1}",str(cpu))
-        table.add_row("Total", str(total))
+        
+        cpu_list_colored = self.color_cpu(cpu_list)
+        total_colored = self.color_cpu([total])[0]
+        
+        for i, cpu in enumerate(cpu_list_colored):
+            table.add_row(f"CPU {i + 1}",cpu)
+        table.add_row("Total", total_colored)
         
         return table
 
-    def build_memory_table(self,data) -> Table:
+    def build_memory_table(self,data: dict) -> Table:
         table = Table()
         table.add_column("Metric")
         table.add_column("Value")
         mem_stats = data
         
-        for key in mem_stats.keys():
-            table.add_row(key, str(mem_stats[key]))
+        mem_stats_colored_list = self.color_mem(data)
+        
+        mem_stats_colored = {k:v for k,v in zip(mem_stats.keys(),mem_stats_colored_list)}
+        
+        for key in mem_stats_colored.keys():
+            table.add_row(key, mem_stats_colored[key])
             
         return table
 
     
-    def build_disk_table(self,data) -> Table:
+    def build_disk_table(self,data: list[dict]) -> Table:
         
         disks = data
         
@@ -105,7 +112,12 @@ class Display:
             disk_table = Table(title=disk["device"]) #type:ignore
             disk_table.add_column("Metric")
             disk_table.add_column("Value")
-            for k,v in disk.items():
+            
+            colored_disk_list: list[str] = self.color_disk(disk)
+            
+            colored_disk = {k:v for k,v in zip(disk.keys(),colored_disk_list)}
+            
+            for k,v in colored_disk.items():
                 if k != "device":
                     disk_table.add_row(k, str(v))
             tables.append(disk_table)
@@ -127,6 +139,66 @@ class Display:
         
         return table
 
+    def color_cpu(self, values: list[float]) -> list[str]:
+        to_return: list[str] = []
+        
+        for val in values:
+            to_return.append(self.color_according_to_range(val,15.0,60.0))
+        
+        return to_return
+
+    def color_mem(self,data) -> list[str]:
+        to_return: list[str] = []
+        
+        used = data["used"]
+        total = data["total"]
+        percent = data["percent"]
+        
+        
+        to_return.append(self.color_according_to_range(float(used[:-2]),1.5,6.0) + "GB")
+        to_return.append(total)
+        to_return.append(self.color_according_to_range(percent,20.0,85.0,True))
+        
+        return to_return
+    
+    def color_disk(self,data: dict) -> list[str]:
+        to_return: list[str] = [data["mountpoint"],data["device"]]
+        
+        used = data["used"]
+        total = data["total"]
+        percent = data["percent"]
+        
+        to_return.append(self.color_according_to_range(float(used[:-2]),1.5,6.0) + "GB")
+        to_return.append(total)
+        to_return.append(self.color_according_to_range(percent,20.0,85.0,True))
+        
+        return to_return
+    
+    
+    def color_according_to_range(self,val: float, min: float,max: float,reverse=False) -> str:
+        """
+        return formatted string according to the value.
+        
+        good color if val < min
+        ok color if min < val < max
+        bad color if max < val
+        
+        reverse if the bigger the value the better. 
+        
+        """
+        if reverse:
+            bad_color,good_color = GOOD_COLOR,BAD_COLOR
+        else:
+            good_color,bad_color = GOOD_COLOR,BAD_COLOR
+        
+        if val > max:
+            return f"[{bad_color}]{val}"
+        elif val < min:
+            return f"[{good_color}]{val}"
+        else:
+            return f"[{OK_COLOR}]{val}"
+    
+    
     
 
 
