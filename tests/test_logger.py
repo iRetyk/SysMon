@@ -1,7 +1,7 @@
 from src import Logger
 from unittest.mock import MagicMock
 import pytest
-
+import json
 
 ##############
 ## Test log ##
@@ -37,7 +37,6 @@ def test_log(mocker, mock_data, mock_time):
     mock_log_json: MagicMock = mocker.patch("src.logger.Logger.log_json")
 
     logger = Logger("/")
-
     logger.log(mock_data)
 
     # Making a hard copy is necessary - If making shallow copy or using the same object the test doesn't detect some failures.
@@ -61,9 +60,7 @@ def test_log_json(mocker, mock_data):
     mocker.patch("src.logger.open", mock_file)
 
     logger = Logger("/")
-
     logger.log_json(mock_data)
-
     mock_dump.assert_called_once_with(mock_data, mock_file())
 
 
@@ -73,10 +70,16 @@ def test_log_json(mocker, mock_data):
 
 
 @pytest.mark.parametrize(
-    "mock_data", ["AAA", [{"ABC": 123, "@@": 22}, 14, None, [None, 15.5, [None]]]]
+    "mock_data,file_name", [({"AAA": 10}, 1), ({"ABC": 123, "@@": 22}, 2)]
 )
-def comp_test(mocker, mock_data):
-    path = "/log/test"
+def test_comp(mocker, mock_data, file_name):
+    path = f"log/test{file_name}"
     logger = Logger(path)
 
     logger.log(mock_data)
+
+    with open(path, "r") as f:
+        d = json.load(f)
+        for k, v in d.items():
+            if k != "time":
+                assert v == mock_data[k]

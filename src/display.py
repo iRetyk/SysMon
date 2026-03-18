@@ -8,7 +8,6 @@ from rich.align import Align
 from rich.progress import Progress
 
 import time
-import threading
 
 
 CPU_COLOR_TITLE = "grey11"
@@ -32,7 +31,7 @@ class Display:
     def shutdown(self):
         try:
             self.__live.stop()
-        except:
+        except Exception:
             pass
 
     def update(self, data: dict):
@@ -98,7 +97,6 @@ class Display:
         return table
 
     def build_disk_table(self, data: list[dict]) -> Table:
-
         disks = data
 
         tables: list[Table] = []
