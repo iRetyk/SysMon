@@ -28,7 +28,7 @@ class Display:
 
 
     def ready(self):
-        self.__live = Live(refresh_per_second=1)
+        self.__live = Live(refresh_per_second=5)
         self.__live.start()
     
     
