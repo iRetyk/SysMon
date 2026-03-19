@@ -17,11 +17,11 @@ SysMon is a small command-line utility that monitors system data in realtime, in
 1. Clone repository:
 
 ```bash
-git clone https://github.com/<your-org>/SysMon.git
+git clone https://github.com/<iRetyk>/SysMon.git
 cd SysMon
 ```
 
-2. Create and activate a Python environment:
+2. (Optinal but recommend) Create and activate a Python environment:
 
 ```bash
 python -m venv .venv
