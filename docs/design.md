@@ -1,25 +1,5 @@
 
 
-Architecture dits:
-
-the var data refers to a dict in this format, that is used to pass cleanly all the required data to other modules
-
-    {"cpu": <cpu_data>, "mem":<mem_data>, "disk":<disk_data>}
-        cpu_data: (<per_cpu_percent>,<total>)
-            per_cpu_percent: list[float]
-            total: float
-        mem_data: {"used":<used>,"total":<total>,"percent":<percent>}
-            used: str
-            total: str
-            percent: float
-        disk_data: [<disk_dict0>,<disk_dict1>...]
-            disk_dict: {"mountpoint":<mountpoint>, "device":<device>, "used":<used>,"total":<total>,"percent":<percent>}
-                mountpoint: str
-                device : str
-                used: str
-                total: str
-                percent: float
-
 
 If an error occurred while trying to log (no permission etc), will print error message and continue to display the stats just without the logging.
 

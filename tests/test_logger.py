@@ -1,7 +1,10 @@
-from src import Logger
-from unittest.mock import MagicMock
 import pytest
+
 import json
+from unittest.mock import MagicMock
+
+from src import Logger
+
 
 ##############
 ## Test log ##

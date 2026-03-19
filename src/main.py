@@ -5,11 +5,12 @@ Argument Parsing
 import argparse
 
 import threading
+
 from logger import Logger
 from display import Display
 from collector import get_cpu_usage, get_memory, get_disk
-
 from data_classes import Data
+
 
 DATA: Data
 
@@ -32,26 +33,6 @@ def parse_args():
 
 
 def get_data(interval: float) -> Data:
-    """
-    Returns a dict with all the data, in this format:
-
-    {"cpu": <cpu_data>, "mem":<mem_data>, "disk":<disk_data>}
-        cpu_data: (<per_cpu_percent>,<total>)
-            per_cpu_percent: list[float]
-            total: float
-        mem_data: {"used":<used>,"total":<total>,"percent":<percent>}
-            used: str
-            total: str
-            percent: float
-        disk_data: [<disk_dict0>,<disk_dict1>...]
-            disk_dict: {"mountpoint":<mountpoint>, "device":<device>, "used":<used>,"total":<total>,"percent":<percent>}
-                mountpoint: str
-                device : str
-                used: str
-                total: str
-                percent: float
-    """
-
     # get_cpu_usage sleeps internally so this function sleeps internally
     global DATA
     DATA = Data(get_cpu_usage(interval), get_memory(), get_disk())

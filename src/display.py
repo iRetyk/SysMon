@@ -1,9 +1,6 @@
 """
 Rendering logic (rich)
 """
-
-from data_classes import Data, CPUData, MemoryData, DiskData
-
 from rich.live import Live
 from rich.table import Table
 from rich.align import Align
@@ -11,6 +8,9 @@ from rich.progress import Progress
 
 import time
 from dataclasses import asdict
+
+from data_classes import Data, CPUData, MemoryData, DiskData
+
 
 CPU_COLOR_TITLE = "grey11"
 DISK_COLOR_TITLE = "grey35"

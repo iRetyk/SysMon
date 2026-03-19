@@ -5,7 +5,7 @@ import json
 import datetime
 from dataclasses import asdict
 
-from data_classes import Data, CPUData, MemoryData, DiskData
+from data_classes import Data
 
 class Logger:
     def __init__(self,path: str) -> None:

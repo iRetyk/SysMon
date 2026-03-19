@@ -1,7 +1,8 @@
-from src import get_cpu_usage, get_memory, get_disk
 import pytest
+
 from collections import namedtuple
-from src import CPUData, MemoryData, DiskData
+
+from src import CPUData, MemoryData, DiskData, get_cpu_usage, get_memory, get_disk
 
 ########################
 ## Test get_cpu_usage ##

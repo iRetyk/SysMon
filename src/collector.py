@@ -1,9 +1,9 @@
 """
 Collect the metrics displayed to user
 """
+import psutil
 
 from data_classes import CPUData, MemoryData, DiskData
-import psutil
 
 
 def get_cpu_usage(interval: float, force: bool = True) -> CPUData:
@@ -33,7 +33,7 @@ def get_memory() -> MemoryData:
     """
     mem_stats = psutil.virtual_memory()
     total = mem_stats.total  # Total
-    available = (
+    available = (  # noqa: F841
         mem_stats.available
     )  # Memory that can be given by the os immediately  # noqa: F841
     percent = mem_stats.percent  # total - available / total * 100
