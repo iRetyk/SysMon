@@ -3,7 +3,7 @@ Collect the metrics displayed to user
 """
 import psutil
 
-from data_classes import CPUData, MemoryData, DiskData
+from .data_classes import CPUData, MemoryData, DiskData
 
 
 def get_cpu_usage(interval: float, force: bool = True) -> CPUData:
@@ -55,10 +55,10 @@ def get_disk() -> list[DiskData]:
 
         disk_list.append(
             DiskData(
-                disk_par.mountpoint,
                 disk_par.device,
-                convert_to_GB(usage.total),
+                disk_par.mountpoint,
                 convert_to_GB(usage.used),
+                convert_to_GB(usage.total),
                 usage.percent,
             )
         )

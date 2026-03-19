@@ -2,7 +2,16 @@ import pytest
 
 from collections import namedtuple
 
-from src import CPUData, MemoryData, DiskData, get_cpu_usage, get_memory, get_disk
+from src import (
+    CPUData,
+    MemoryData,
+    DiskData,
+    get_cpu_usage,
+    get_memory,
+    get_disk,
+    convert_to_GB,
+)
+
 
 ########################
 ## Test get_cpu_usage ##
@@ -22,7 +31,8 @@ from src import CPUData, MemoryData, DiskData, get_cpu_usage, get_memory, get_di
 )
 def test_cpu(mocker, mock_per_core, mock_total):
     mocker.patch("src.collector.psutil.cpu_percent", return_value=mock_per_core)
-    assert CPUData(mock_per_core,mock_total) == get_cpu_usage(2)
+    assert CPUData(mock_per_core, mock_total) == get_cpu_usage(2)
+
 
 def test_cpu_empty_list(mocker):
     mocker.patch("src.collector.psutil.cpu_percent", return_value=[])
@@ -39,7 +49,11 @@ mock_svmem = namedtuple("svmem", ["total", "available", "free", "used", "percent
 
 
 @pytest.mark.parametrize(
-    "total,available,free,used,percent", [(20, 10, 15, 7, 6.5), (0, 0, 0, 0, 0), ]
+    "total,available,free,used,percent",
+    [
+        (20, 10, 15, 7, 6.5),
+        (0, 0, 0, 0, 0),
+    ],
 )
 def test_mem(mocker, total, available, free, used, percent):
     mock_memory_object = mock_svmem(
@@ -50,7 +64,7 @@ def test_mem(mocker, total, available, free, used, percent):
 
     mem_stats = get_memory()
 
-    assert mem_stats == MemoryData(used,total,percent)
+    assert mem_stats == MemoryData(convert_to_GB(used), convert_to_GB(total), percent)
 
 
 ###################
@@ -79,4 +93,6 @@ def test_disk(mocker, mountpoint, device, total, used, percent):
     )
     disk_stats_list = get_disk()
 
-    assert disk_stats_list == [DiskData(device,mountpoint,used,total,percent)]
+    assert disk_stats_list == [
+        DiskData(device, mountpoint, convert_to_GB(used), convert_to_GB(total), percent)
+    ]
