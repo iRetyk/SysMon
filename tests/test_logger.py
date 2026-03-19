@@ -1,3 +1,5 @@
+"""Tests for logger module."""
+
 import pytest
 
 import json
@@ -49,6 +51,10 @@ from src import Logger, Data, CPUData, MemoryData, DiskData
     ],
 )
 def test_log(mocker, mock_data: Data, mock_time):
+    """
+    Test the log method of the Logger class.
+    """
+
     # mock all function calls inside Logger.log
     mock_dt = mocker.patch("src.logger.datetime.datetime")
     mock_dt.now.return_value.isoformat.return_value = mock_time
@@ -111,7 +117,7 @@ def test_log_json(mocker, mock_data: Data):
     mocker.patch("src.logger.open", mock_file)
 
     logger = Logger("/")
-    logger.log_json(mock_data)
+    logger._log_json(mock_data)
     mock_dump.assert_called_once_with(mock_data, mock_file())
 
 

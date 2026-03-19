@@ -16,6 +16,7 @@ DATA: Data
 
 
 def parse_args():
+    """Parse and return command-line arguments for the SysMon app."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--interval",
@@ -33,6 +34,7 @@ def parse_args():
 
 
 def get_data(interval: float) -> Data:
+    """Collect CPU, memory, and disk metrics and return a `Data` container."""
     # get_cpu_usage sleeps internally so this function sleeps internally
     global DATA
     DATA = Data(get_cpu_usage(interval), get_memory(), get_disk())
@@ -40,25 +42,27 @@ def get_data(interval: float) -> Data:
 
 
 def main():
+    """Run the interactive display app and optional logger until user stops it."""
     # Project entry point
     args = parse_args()
     interval = max(args.interval, 0.2)  # values under 0.2, are rounded to 0.2.
     log_path = args.log
     log = log_path is not None
-
+    
     app = Display(interval)
     if log:
         logger = Logger(log_path)
-    t1 = threading.Thread(target=get_data, args=[interval], daemon=True)
-    t1.start()
-    app.load_progress()
-    t1.join()
+    
+    try:
+        t1 = threading.Thread(target=get_data, args=[interval], daemon=True)
+        t1.start()
+        app.load_progress()
+        t1.join()
 
-    data = DATA  # No need to use lock because t1.join was already called
-    app.ready()
+        data = DATA  # No need to use lock because t1.join was already called
+        app.ready()
 
     # Main loop
-    try:
         while True:
             if log:
                 logger.log(data)  # type:ignore
@@ -71,15 +75,5 @@ def main():
         app.shutdown()
 
 
-def debug_main():
-    data = get_data(2)
-    logger = Logger("../log/json_test.json")
-    logger.log(data)
-
-
 if __name__ == "__main__":
-    debug = False
-    if debug:
-        debug_main()
-    else:
-        main()
+    main()

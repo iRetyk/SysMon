@@ -1,3 +1,5 @@
+"""Tests for collector module functions."""
+
 import pytest
 
 from collections import namedtuple

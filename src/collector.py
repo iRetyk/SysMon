@@ -1,18 +1,25 @@
 """
-Collect the metrics displayed to user
+Collect the metrics displayed to user.
+This module provides helpers for CPU, memory, and disk metrics via psutil.
 """
+
 import psutil
 
 from .data_classes import CPUData, MemoryData, DiskData
 
 
 def get_cpu_usage(interval: float, force: bool = True) -> CPUData:
-    """
-    NOTE: this function sleeps for interval many seconds
-    Input: interval (float)
-            force (bool) - force the program to calculate it now. If set to false - may
+    """Get CPU usage for each core and total CPU usage.
 
-    Output: Usage per-core, total (tuple[list[float],float])
+    Args:
+        interval: Sample interval in seconds. This function will sleep for interval seconds.
+        force: Placeholder argument for compatibility/current API usage.
+
+    Returns:
+        CPUData object with per-core percentages and total percentage.
+
+    Raises:
+        RuntimeError: If psutil returns an empty per-core list.
     """
     cpu_percent_list = psutil.cpu_percent(interval, percpu=True)
 
@@ -26,10 +33,10 @@ def get_cpu_usage(interval: float, force: bool = True) -> CPUData:
 
 
 def get_memory() -> MemoryData:
-    """
-    Input: no input
+    """Get memory usage statistics.
 
-    Output: Memory stats of used, total, percent (dict[str,int | float])
+    Returns:
+        MemoryData with used, total (formatted as GB strings) and percentage used.
     """
     mem_stats = psutil.virtual_memory()
     total = mem_stats.total  # Total
@@ -43,6 +50,11 @@ def get_memory() -> MemoryData:
 
 
 def get_disk() -> list[DiskData]:
+    """Get disk usage statistics for each mounted partition.
+
+    Returns:
+        List of DiskData objects with device, mountpoint, used, total, and percent used.
+    """
     """
     Input: no input
 
@@ -67,6 +79,14 @@ def get_disk() -> list[DiskData]:
 
 
 def convert_to_GB(num: float) -> str:
+    """Convert bytes to a human-readable gigabyte string.
+
+    Args:
+        num: Bytes value to convert.
+
+    Returns:
+        A string formatted as '{value:.2f}GB'.
+    """
     return f"{num / 1024**3:.2f}GB"
 
 
