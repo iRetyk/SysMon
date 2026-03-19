@@ -9,7 +9,9 @@ from logger import Logger
 from display import Display
 from collector import get_cpu_usage, get_memory, get_disk
 
-DATA = {}
+from data_classes import Data
+
+DATA: Data
 
 
 def parse_args():
@@ -29,7 +31,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def get_data(interval: float) -> dict:
+def get_data(interval: float) -> Data:
     """
     Returns a dict with all the data, in this format:
 
@@ -52,7 +54,7 @@ def get_data(interval: float) -> dict:
 
     # get_cpu_usage sleeps internally so this function sleeps internally
     global DATA
-    DATA = {"cpu": get_cpu_usage(interval), "mem": get_memory(), "disk": get_disk()}
+    DATA = Data(get_cpu_usage(interval), get_memory(), get_disk())
     return DATA
 
 

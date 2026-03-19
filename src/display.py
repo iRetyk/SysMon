@@ -2,13 +2,15 @@
 Rendering logic (rich)
 """
 
+from data_classes import Data, CPUData, MemoryData, DiskData
+
 from rich.live import Live
 from rich.table import Table
 from rich.align import Align
 from rich.progress import Progress
 
 import time
-
+from dataclasses import asdict
 
 CPU_COLOR_TITLE = "grey11"
 DISK_COLOR_TITLE = "grey35"
@@ -34,7 +36,7 @@ class Display:
         except Exception:
             pass
 
-    def update(self, data: dict):
+    def update(self, data: Data):
         self.build_table(data)
         self.__live.update(self.__table)
 
@@ -45,15 +47,15 @@ class Display:
                 time.sleep(self.__interval / 50.0)
                 p.update(task, advance=1)
 
-    def build_table(self, data: dict):
+    def build_table(self, data: Data):
         table = Table(title="System Metrics")
         table.add_column(Align(f"[{CPU_COLOR_TITLE}]CPU", "center"))
         table.add_column(Align(f"[{DISK_COLOR_TITLE}]Disk", "center"))
         table.add_column(Align(f"[{MEM_COLOR_TITLE}]Memory", "center"))
         table.add_row(
-            self.build_cpu_table(data["cpu"]),
-            self.build_disk_table(data["disk"]),
-            self.build_memory_table(data["mem"]),
+            self.build_cpu_table(data.cpu),
+            self.build_disk_table(data.disks),
+            self.build_memory_table(data.mem),
         )
 
         ### Alternative design ###
@@ -63,12 +65,12 @@ class Display:
 
         self.__table = table
 
-    def build_cpu_table(self, data: tuple[list[float], float]) -> Table:
+    def build_cpu_table(self, data: CPUData) -> Table:
         table = Table()
         table.add_column("Metric")
         table.add_column("Value")
 
-        cpu_list, total = data
+        cpu_list, total = data.per_cpu, data.total
 
         cpu_list_colored = self.color_cpu(cpu_list)
         total_colored = self.color_cpu([total])[0]
@@ -79,7 +81,7 @@ class Display:
 
         return table
 
-    def build_memory_table(self, data: dict) -> Table:
+    def build_memory_table(self, data: MemoryData) -> Table:
         table = Table()
         table.add_column("Metric")
         table.add_column("Value")
@@ -88,7 +90,7 @@ class Display:
         mem_stats_colored_list = self.color_mem(data)
 
         mem_stats_colored = {
-            k: v for k, v in zip(mem_stats.keys(), mem_stats_colored_list)
+            k: v for k, v in zip(asdict(mem_stats).keys(), mem_stats_colored_list)
         }
 
         for key in mem_stats_colored.keys():
@@ -96,19 +98,21 @@ class Display:
 
         return table
 
-    def build_disk_table(self, data: list[dict]) -> Table:
+    def build_disk_table(self, data: list[DiskData]) -> Table:
         disks = data
 
         tables: list[Table] = []
 
         for disk in disks:
-            disk_table = Table(title=disk["device"])  # type:ignore
+            disk_table = Table(title=disk.device)  # type:ignore
             disk_table.add_column("Metric")
             disk_table.add_column("Value")
 
             colored_disk_list: list[str] = self.color_disk(disk)
 
-            colored_disk = {k: v for k, v in zip(disk.keys(), colored_disk_list)}
+            colored_disk = {
+                k: v for k, v in zip(asdict(disk).keys(), colored_disk_list)
+            }
 
             for k, v in colored_disk.items():
                 if k != "device":
@@ -139,12 +143,12 @@ class Display:
 
         return to_return
 
-    def color_mem(self, data) -> list[str]:
+    def color_mem(self, data: MemoryData) -> list[str]:
         to_return: list[str] = []
 
-        used = data["used"]
-        total = data["total"]
-        percent = data["percent"]
+        used = data.used
+        total = data.total
+        percent = data.percent
 
         to_return.append(
             self.color_according_to_range(float(used[:-2]), 1.5, 6.0) + "GB"
@@ -154,12 +158,12 @@ class Display:
 
         return to_return
 
-    def color_disk(self, data: dict) -> list[str]:
-        to_return: list[str] = [data["mountpoint"], data["device"]]
+    def color_disk(self, data: DiskData) -> list[str]:
+        to_return: list[str] = [data.mountpoint, data.device]
 
-        used = data["used"]
-        total = data["total"]
-        percent = data["percent"]
+        used = data.used
+        total = data.total
+        percent = data.percent
 
         to_return.append(
             self.color_according_to_range(float(used[:-2]), 1.5, 6.0) + "GB"

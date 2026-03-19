@@ -1,7 +1,7 @@
-from src import get_cpu_usage, get_memory, get_disk, convert_to_GB
+from src import get_cpu_usage, get_memory, get_disk
 import pytest
 from collections import namedtuple
-
+from src import CPUData, MemoryData, DiskData
 
 ########################
 ## Test get_cpu_usage ##
@@ -21,12 +21,7 @@ from collections import namedtuple
 )
 def test_cpu(mocker, mock_per_core, mock_total):
     mocker.patch("src.collector.psutil.cpu_percent", return_value=mock_per_core)
-
-    per_core, total = get_cpu_usage(2)
-
-    assert per_core == mock_per_core
-    assert total == mock_total
-
+    assert CPUData(mock_per_core,mock_total) == get_cpu_usage(2)
 
 def test_cpu_empty_list(mocker):
     mocker.patch("src.collector.psutil.cpu_percent", return_value=[])
@@ -54,9 +49,7 @@ def test_mem(mocker, total, available, free, used, percent):
 
     mem_stats = get_memory()
 
-    assert mem_stats["total"] == convert_to_GB(total)
-    assert mem_stats["used"] == convert_to_GB(used)
-    assert mem_stats["percent"] == percent
+    assert mem_stats == MemoryData(used,total,percent)
 
 
 ###################
@@ -83,15 +76,6 @@ def test_disk(mocker, mountpoint, device, total, used, percent):
     mocker.patch(
         "psutil.disk_usage", return_value=Usage(total=total, used=used, percent=percent)
     )
+    disk_stats_list = get_disk()
 
-    # Call the function
-    mem_stats_list = get_disk()
-
-    # Since get_disk returns a list of dicts, take the first element
-    mem_stats = mem_stats_list[0]
-
-    assert mem_stats["mountpoint"] == mountpoint
-    assert mem_stats["device"] == device
-    assert mem_stats["total"] == convert_to_GB(total)
-    assert mem_stats["used"] == convert_to_GB(used)
-    assert mem_stats["percent"] == percent
+    assert disk_stats_list == [DiskData(device,mountpoint,used,total,percent)]

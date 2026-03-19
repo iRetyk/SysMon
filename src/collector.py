@@ -2,10 +2,11 @@
 Collect the metrics displayed to user
 """
 
+from data_classes import CPUData, MemoryData, DiskData
 import psutil
 
 
-def get_cpu_usage(interval: float, force: bool = True) -> tuple[list[float], float]:
+def get_cpu_usage(interval: float, force: bool = True) -> CPUData:
     """
     NOTE: this function sleeps for interval many seconds
     Input: interval (float)
@@ -21,10 +22,10 @@ def get_cpu_usage(interval: float, force: bool = True) -> tuple[list[float], flo
     total_cpu_percent = round(
         sum(cpu_percent_list) / len(cpu_percent_list), 1
     )  # Average percent rounded to one decimal point
-    return cpu_percent_list, total_cpu_percent
+    return CPUData(cpu_percent_list, total_cpu_percent)
 
 
-def get_memory() -> dict[str, str | float]:
+def get_memory() -> MemoryData:
     """
     Input: no input
 
@@ -32,36 +33,34 @@ def get_memory() -> dict[str, str | float]:
     """
     mem_stats = psutil.virtual_memory()
     total = mem_stats.total  # Total
-    available = mem_stats.available  # Memory that can be given by the os immediately  # noqa: F841
+    available = (
+        mem_stats.available
+    )  # Memory that can be given by the os immediately  # noqa: F841
     percent = mem_stats.percent  # total - available / total * 100
     used = mem_stats.used  # Memory currently in use
     free = mem_stats.free  # noqa: F841
-    return {
-        "used": convert_to_GB(used),
-        "total": convert_to_GB(total),
-        "percent": percent,
-    }
+    return MemoryData(convert_to_GB(used), convert_to_GB(total), percent)
 
 
-def get_disk() -> list[dict[str, str | float]]:
+def get_disk() -> list[DiskData]:
     """
     Input: no input
 
     Output: List of every partition info (mountpoint, device, total, used, percent) (list[dict])
     """
-    disk_list: list[dict] = []
+    disk_list: list[DiskData] = []
 
     for disk_par in psutil.disk_partitions():
         usage = psutil.disk_usage(disk_par.mountpoint)
 
         disk_list.append(
-            {
-                "mountpoint": disk_par.mountpoint,
-                "device": disk_par.device,
-                "total": convert_to_GB(usage.total),
-                "used": convert_to_GB(usage.used),
-                "percent": usage.percent,
-            }
+            DiskData(
+                disk_par.mountpoint,
+                disk_par.device,
+                convert_to_GB(usage.total),
+                convert_to_GB(usage.used),
+                usage.percent,
+            )
         )
 
     return disk_list
