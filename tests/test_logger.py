@@ -58,7 +58,7 @@ def test_log(mocker, mock_data: Data, mock_time):
     # mock all function calls inside Logger.log
     mock_dt = mocker.patch("src.logger.datetime.datetime")
     mock_dt.now.return_value.isoformat.return_value = mock_time
-    mock_log_json: MagicMock = mocker.patch("src.logger.Logger.log_json")
+    mock_log_json: MagicMock = mocker.patch("src.logger.Logger._log_json")
 
     logger = Logger("/")
     logger.log(mock_data)
