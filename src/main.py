@@ -86,6 +86,8 @@ def main():
         print("Exiting cleanly...")
     finally:
         app.shutdown()
+        if os.path.exists(data_file):
+            os.remove(data_file)
 
 
 if __name__ == "__main__":
