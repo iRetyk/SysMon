@@ -6,7 +6,8 @@ import json
 from unittest.mock import MagicMock
 from dataclasses import asdict
 
-from src import Logger, Data, CPUData, MemoryData, DiskData
+from src.logger import Logger
+from src.data_classes import Data, CPUData, MemoryData, DiskData
 
 
 ##############

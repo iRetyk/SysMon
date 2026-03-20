@@ -10,7 +10,7 @@ from rich.progress import Progress
 import time
 from dataclasses import asdict
 
-from data_classes import Data, CPUData, MemoryData, DiskData
+from src.data_classes import Data, CPUData, MemoryData, DiskData
 
 
 CPU_COLOR_TITLE = "grey11"

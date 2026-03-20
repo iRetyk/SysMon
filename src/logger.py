@@ -8,7 +8,7 @@ import os
 from dataclasses import asdict
 from pathlib import Path
 
-from .data_classes import Data
+from src.data_classes import Data
 
 
 class Logger:

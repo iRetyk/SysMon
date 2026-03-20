@@ -2,9 +2,15 @@
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+packages = ["src", "tests"] # Explicitly define your top-level packages
+
+[tool.pytest.ini_options]
+pythonpath = ["."] # Allows pytest to see 'src' and 'tests' from the root
+
 
 [project]
 name = "SysMon"
 version = "0.1.0"
-authors = {name = "Idan Retyk"}
+authors = [{name = "Idan Retyk"}]
 dependencies = ["psutil","rich"]

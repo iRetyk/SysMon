@@ -4,16 +4,13 @@ import pytest
 
 from collections import namedtuple
 
-from src import (
+from src.data_classes import (
     CPUData,
     MemoryData,
     DiskData,
-    get_cpu_usage,
-    get_memory,
-    get_disk,
-    convert_to_GB,
 )
 
+from src.collector import get_cpu_usage,get_memory,get_disk,convert_to_GB
 
 ########################
 ## Test get_cpu_usage ##

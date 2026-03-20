@@ -6,10 +6,10 @@ import argparse
 
 import threading
 
-from logger import Logger
-from display import Display
-from collector import get_cpu_usage, get_memory, get_disk
-from data_classes import Data
+from src.logger import Logger
+from src.display import Display
+from src.collector import get_cpu_usage, get_memory, get_disk
+from src.data_classes import Data
 
 
 DATA: Data

@@ -5,7 +5,7 @@ This module provides helpers for CPU, memory, and disk metrics via psutil.
 
 import psutil
 
-from .data_classes import CPUData, MemoryData, DiskData
+from src.data_classes import CPUData, MemoryData, DiskData
 
 
 def get_cpu_usage(interval: float, force: bool = True) -> CPUData:
