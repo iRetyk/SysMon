@@ -2,7 +2,7 @@
 Data Classes used for type hints and clarity.
 """
 
-from dataclasses import dataclass,field
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -22,13 +22,13 @@ class MemoryData:
     percent: float
     used_str: str = field(init=False)
     total_str: str = field(init=False)
-    
+
     def __post_init__(self):
         self.used_str = convert_to_GB(self.used)
         self.total_str = convert_to_GB(self.total)
-    
+
     def to_dict(self) -> dict:
-        return {"used":self.used_str,"total":self.total_str,"percent":self.percent}
+        return {"used": self.used_str, "total": self.total_str, "percent": self.percent}
 
 
 @dataclass
@@ -42,13 +42,19 @@ class DiskData:
     percent: float
     used_str: str = field(init=False)
     total_str: str = field(init=False)
-    
+
     def __post_init__(self):
         self.used_str = convert_to_GB(self.used)
         self.total_str = convert_to_GB(self.total)
-    
+
     def to_dict(self) -> dict:
-        return {"used":self.used_str,"total":self.total_str,"percent":self.percent}
+        return {
+            "device": self.device,
+            "mountpoint": self.mountpoint,
+            "used": self.used_str,
+            "total": self.total_str,
+            "percent": self.percent,
+        }
 
 
 @dataclass

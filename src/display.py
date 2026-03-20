@@ -8,9 +8,8 @@ from rich.align import Align
 from rich.progress import Progress
 
 import time
-from dataclasses import asdict
 
-from src.data_classes import Data, CPUData, MemoryData, DiskData
+from src.data_classes import Data, CPUData, MemoryData, DiskData, convert_to_GB
 
 
 CPU_COLOR_TITLE = "grey11"
@@ -112,7 +111,7 @@ class Display:
         mem_stats_colored_list = self._color_mem(data)
 
         mem_stats_colored = {
-            k: v for k, v in zip(asdict(mem_stats).keys(), mem_stats_colored_list)
+            k: v for k, v in zip(mem_stats.to_dict().keys(), mem_stats_colored_list)
         }
 
         for key in mem_stats_colored.keys():
@@ -134,7 +133,7 @@ class Display:
             colored_disk_list: list[str] = self._color_disk(disk)
 
             colored_disk = {
-                k: v for k, v in zip(asdict(disk).keys(), colored_disk_list)
+                k: v for k, v in zip(disk.to_dict().keys(), colored_disk_list)
             }
 
             for k, v in colored_disk.items():
@@ -172,9 +171,15 @@ class Display:
         to_return: list[str] = []
 
         to_return.append(
-            self._color_according_to_range(data.used, 1.5, 6.0) + "GB"
+            self._color_according_to_range(
+                data.used, 10 * (1024**3), 100 * (1024**3), format="GB"
+            )
         )
-        to_return.append(data.total_str)
+        to_return.append(
+            self._color_according_to_range(
+                data.total, 10 * (1024**3), 100 * (1024**3), format="GB"
+            )
+        )
         to_return.append(self._color_according_to_range(data.percent, 20.0, 85.0, True))
 
         return to_return
@@ -183,15 +188,21 @@ class Display:
         """Colorize disk values and return output list for display."""
         to_return: list[str] = [data.mountpoint, data.device]
         to_return.append(
-            self._color_according_to_range(data.used, 1.5, 6.0) + "GB"
+            self._color_according_to_range(
+                data.used, 10 * (1024**3), 100 * (1024**3), format="GB"
+            )
         )
-        to_return.append(data.total_str)
+        to_return.append(
+            self._color_according_to_range(
+                data.total, 10 * (1024**3), 100 * (1024**3), format="GB"
+            )
+        )
         to_return.append(self._color_according_to_range(data.percent, 20.0, 85.0, True))
 
         return to_return
 
     def _color_according_to_range(
-        self, val: float, min: float, max: float, reverse=False
+        self, val: float, min: float, max: float, reverse=False, format: str = ""
     ) -> str:
         """
         return formatted string according to the value.
@@ -203,17 +214,20 @@ class Display:
         reverse if the bigger the value the better.
 
         """
+
+        format_val = convert_to_GB(val) if format else val
+
         if reverse:
             bad_color, good_color = GOOD_COLOR, BAD_COLOR
         else:
             good_color, bad_color = GOOD_COLOR, BAD_COLOR
 
         if val > max:
-            return f"[{bad_color}]{val}"
+            return f"[{bad_color}]{format_val}"
         elif val < min:
-            return f"[{good_color}]{val}"
+            return f"[{good_color}]{format_val}"
         else:
-            return f"[{OK_COLOR}]{val}"
+            return f"[{OK_COLOR}]{format_val}"
 
 
 if __name__ == "__main__":
