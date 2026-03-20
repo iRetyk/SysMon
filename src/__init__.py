@@ -1,3 +1,3 @@
 """
-Docstring for src
+Main package
 """
