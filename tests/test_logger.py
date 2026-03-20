@@ -21,20 +21,20 @@ from src.data_classes import Data, CPUData, MemoryData, DiskData
         (
             Data(
                 cpu=CPUData(per_cpu=[5.0, 30.4, 7.8, 6.7], total=15.2),
-                mem=MemoryData(used="20.00 GB", total="40.00 GB", percent=40.0),
+                mem=MemoryData(used=20 * (1024**3), total=40 * (1024**3), percent=40.0),
                 disks=[
                     DiskData(
                         device="/dev/disk1",
                         mountpoint="/",
-                        used="1.50 GB",
-                        total="8.00 GB",
+                        used=1.5 * (1024**3),
+                        total=8 * (1024**3),
                         percent=70.0,
                     ),
                     DiskData(
                         device="/dev/disk2",
                         mountpoint="/data",
-                        used="0.20 GB",
-                        total="18.00 GB",
+                        used=.2 * (1024**3),
+                        total=18 * ((1024**3)),
                         percent=98.0,
                     ),
                 ],
@@ -44,7 +44,7 @@ from src.data_classes import Data, CPUData, MemoryData, DiskData
         (
             Data(
                 cpu=CPUData(per_cpu=[], total=0.0),
-                mem=MemoryData(used="0 GB", total="0 GB", percent=0.0),
+                mem=MemoryData(used=0, total=0, percent=0.0),
                 disks=[],
             ),
             "0000",
@@ -82,20 +82,20 @@ def test_log(mocker, mock_data: Data, mock_time):
         (
             Data(
                 cpu=CPUData(per_cpu=[5.0, 30.4, 7.8, 6.7], total=15.2),
-                mem=MemoryData(used="20.00 GB", total="40.00 GB", percent=40.0),
+                mem=MemoryData(used=20 * (1024**3), total=40 * (1024**3), percent=40.0),
                 disks=[
                     DiskData(
                         device="/dev/disk1",
                         mountpoint="/",
-                        used="1.50 GB",
-                        total="8.00 GB",
+                        used=1.5 * (1024**3),
+                        total=8 * (1024**3),
                         percent=70.0,
                     ),
                     DiskData(
                         device="/dev/disk2",
                         mountpoint="/data",
-                        used="0.20 GB",
-                        total="18.00 GB",
+                        used=.2 * (1024**3),
+                        total=18 * (1024**3),
                         percent=98.0,
                     ),
                 ],
@@ -105,7 +105,7 @@ def test_log(mocker, mock_data: Data, mock_time):
         (
             Data(
                 cpu=CPUData(per_cpu=[], total=0.0),
-                mem=MemoryData(used="0 GB", total="0 GB", percent=0.0),
+                mem=MemoryData(used=0, total=0, percent=0.0),
                 disks=[],
             ),
             "0000",
@@ -133,30 +133,30 @@ def test_log_json(mocker, mock_data: Data):
         (
             Data(
                 cpu=CPUData(per_cpu=[5.0, 30.4, 7.8, 6.7], total=15.2),
-                mem=MemoryData(used="20.00 GB", total="40.00 GB", percent=40.0),
+                mem=MemoryData(used=20 * (1024**3), total=40 * (1024**3), percent=40.0),
                 disks=[
                     DiskData(
                         device="/dev/disk1",
                         mountpoint="/",
-                        used="1.50 GB",
-                        total="8.00 GB",
+                        used=1.5 * (1024**3),
+                        total=8 * (1024**3),
                         percent=70.0,
                     ),
                     DiskData(
                         device="/dev/disk2",
                         mountpoint="/data",
-                        used="0.20 GB",
-                        total="18.00 GB",
+                        used=.2 * (1024**3),
+                        total=18 * (1024**3),
                         percent=98.0,
                     ),
                 ],
             ),
-            "123",
+            "2026-03-18T15:42:10.123456",
         ),
         (
             Data(
                 cpu=CPUData(per_cpu=[], total=0.0),
-                mem=MemoryData(used="0 GB", total="0 GB", percent=0.0),
+                mem=MemoryData(used=0, total=0, percent=0.0),
                 disks=[],
             ),
             "1",

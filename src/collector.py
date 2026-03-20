@@ -46,7 +46,7 @@ def get_memory() -> MemoryData:
     percent = mem_stats.percent  # total - available / total * 100
     used = mem_stats.used  # Memory currently in use
     free = mem_stats.free  # noqa: F841
-    return MemoryData(convert_to_GB(used), convert_to_GB(total), percent)
+    return MemoryData(used, total, percent)
 
 
 def get_disk() -> list[DiskData]:
@@ -69,8 +69,8 @@ def get_disk() -> list[DiskData]:
             DiskData(
                 disk_par.device,
                 disk_par.mountpoint,
-                convert_to_GB(usage.used),
-                convert_to_GB(usage.total),
+                usage.used,
+                usage.total,
                 usage.percent,
             )
         )
@@ -78,16 +78,6 @@ def get_disk() -> list[DiskData]:
     return disk_list
 
 
-def convert_to_GB(num: float) -> str:
-    """Convert bytes to a human-readable gigabyte string.
-
-    Args:
-        num: Bytes value to convert.
-
-    Returns:
-        A string formatted as '{value:.2f}GB'.
-    """
-    return f"{num / 1024**3:.2f}GB"
 
 
 if __name__ == "__main__":

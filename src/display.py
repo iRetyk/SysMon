@@ -171,31 +171,22 @@ class Display:
         """Colorize memory values and return colored values for display."""
         to_return: list[str] = []
 
-        used = data.used
-        total = data.total
-        percent = data.percent
-
         to_return.append(
-            self._color_according_to_range(float(used[:-2]), 1.5, 6.0) + "GB"
+            self._color_according_to_range(data.used, 1.5, 6.0) + "GB"
         )
-        to_return.append(total)
-        to_return.append(self._color_according_to_range(percent, 20.0, 85.0, True))
+        to_return.append(data.total_str)
+        to_return.append(self._color_according_to_range(data.percent, 20.0, 85.0, True))
 
         return to_return
 
     def _color_disk(self, data: DiskData) -> list[str]:
         """Colorize disk values and return output list for display."""
         to_return: list[str] = [data.mountpoint, data.device]
-
-        used = data.used
-        total = data.total
-        percent = data.percent
-
         to_return.append(
-            self._color_according_to_range(float(used[:-2]), 1.5, 6.0) + "GB"
+            self._color_according_to_range(data.used, 1.5, 6.0) + "GB"
         )
-        to_return.append(total)
-        to_return.append(self._color_according_to_range(percent, 20.0, 85.0, True))
+        to_return.append(data.total_str)
+        to_return.append(self._color_according_to_range(data.percent, 20.0, 85.0, True))
 
         return to_return
 

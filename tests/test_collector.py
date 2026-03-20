@@ -10,7 +10,7 @@ from src.data_classes import (
     DiskData,
 )
 
-from src.collector import get_cpu_usage,get_memory,get_disk,convert_to_GB
+from src.collector import get_cpu_usage,get_memory,get_disk
 
 ########################
 ## Test get_cpu_usage ##
@@ -63,7 +63,7 @@ def test_mem(mocker, total, available, free, used, percent):
 
     mem_stats = get_memory()
 
-    assert mem_stats == MemoryData(convert_to_GB(used), convert_to_GB(total), percent)
+    assert mem_stats == MemoryData(used, total, percent)
 
 
 ###################
@@ -93,5 +93,5 @@ def test_disk(mocker, mountpoint, device, total, used, percent):
     disk_stats_list = get_disk()
 
     assert disk_stats_list == [
-        DiskData(device, mountpoint, convert_to_GB(used), convert_to_GB(total), percent)
+        DiskData(device, mountpoint, used, total, percent)
     ]
