@@ -5,14 +5,13 @@ Argument Parsing
 import argparse
 
 import threading
+import pickle
+import os
 
 from src.logger import Logger
 from src.display import Display
 from src.collector import get_cpu_usage, get_memory, get_disk
 from src.data_classes import Data
-
-
-DATA: Data
 
 
 def parse_args():
@@ -33,12 +32,16 @@ def parse_args():
     return parser.parse_args()
 
 
-def get_data(interval: float) -> Data:
+def get_data(interval: float, save_to_file: bool = False, file_path: str = "") -> Data:
     """Collect CPU, memory, and disk metrics and return a `Data` container."""
     # get_cpu_usage sleeps internally so this function sleeps internally
-    global DATA
-    DATA = Data(get_cpu_usage(interval), get_memory(), get_disk())
-    return DATA
+    data = Data(get_cpu_usage(interval), get_memory(), get_disk())
+
+    if save_to_file:
+        with open(file_path, "wb") as f:
+            pickle.dump(data, f)
+
+    return data
 
 
 def main():
@@ -48,21 +51,31 @@ def main():
     interval = max(args.interval, 0.2)  # values under 0.2, are rounded to 0.2.
     log_path = args.log
     log = log_path is not None
-    
+
     app = Display(interval)
     if log:
         logger = Logger(log_path)
-    
+
+    data_file: str = "data.json"
+
     try:
-        t1 = threading.Thread(target=get_data, args=[interval], daemon=True)
+        t1 = threading.Thread(
+            target=get_data,
+            args=[interval, True, data_file],
+            daemon=True,
+        )
         t1.start()
         app.load_progress()
         t1.join()
 
-        data = DATA  # No need to use lock because t1.join was already called
+        with open(
+            data_file, "rb"
+        ) as f:  # No need to use lock because t1.join was already called
+            data = pickle.load(f)
+        os.remove(data_file)
         app.ready()
 
-    # Main loop
+        # Main loop
         while True:
             if log:
                 logger.log(data)  # type:ignore
