@@ -1,5 +1,10 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+
 [project]
 name = "SysMon"
 version = "0.1.0"
-author = "Idan Retyk"
-dependencies = ["psutil","argparse"]
+authors = {name = "Idan Retyk"}
+dependencies = ["psutil","rich"]
